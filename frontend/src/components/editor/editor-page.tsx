@@ -28,6 +28,7 @@ export function EditorPage() {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: editorExtensions,
     content: "",
     onUpdate: ({ editor }) => {
