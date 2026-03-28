@@ -12,6 +12,18 @@ set -e
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
+# ── Load environment variables from .env ──────────────────────────────────────
+if [ -f "$REPO_ROOT/.env" ]; then
+    set -a
+    source "$REPO_ROOT/.env"
+    set +a
+fi
+
+# ── Generate BETTER_AUTH_SECRET if not set (required for next build) ──────────
+if [ -z "$BETTER_AUTH_SECRET" ]; then
+    export BETTER_AUTH_SECRET=$(python3 -c 'import secrets; print(secrets.token_hex(16))')
+fi
+
 # ── Stop existing services ────────────────────────────────────────────────────
 
 echo "Stopping existing services if any..."
@@ -99,7 +111,8 @@ nohup sh -c 'cd backend && PYTHONPATH=. uv run uvicorn app.gateway.app:app --hos
 echo "✓ Gateway API started on localhost:8001"
 
 echo "Starting Frontend..."
-nohup sh -c 'cd frontend && pnpm run dev > ../logs/frontend.log 2>&1' &
+# dev will cost more resoucess, so we use preview(build & start) in daemon mode
+nohup sh -c 'cd frontend && pnpm run preview > ../logs/frontend.log 2>&1' &
 ./scripts/wait-for-port.sh 3000 120 "Frontend" || {
     echo "✗ Frontend failed to start. Last log output:"
     tail -60 logs/frontend.log
