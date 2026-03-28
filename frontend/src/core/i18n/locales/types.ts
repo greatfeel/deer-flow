@@ -111,6 +111,7 @@ export interface Translations {
     agents: string;
     editor: string;
     chatEditor: string;
+    aiEditor: string;
   };
 
   // Agents
