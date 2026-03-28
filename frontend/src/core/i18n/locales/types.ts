@@ -109,8 +109,6 @@ export interface Translations {
     chats: string;
     demoChats: string;
     agents: string;
-    editor: string;
-    chatEditor: string;
     aiEditor: string;
   };
 
