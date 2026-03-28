@@ -22,23 +22,25 @@ export function importDocx(editor: Editor): void {
 }
 
 /**
- * Export editor content as a .docx file download via html-to-docx.
+ * Export editor content as a .doc file download.
+ * Uses Word-compatible HTML wrapping (browser-safe, no Node.js dependencies).
  */
-export async function exportDocx(
+export function exportDocx(
   editor: Editor,
   filename = "document"
-): Promise<void> {
+): void {
   const html = editor.getHTML();
-  const htmlToDocx = (await import("html-to-docx")).default;
-  const blob = await htmlToDocx(
-    `<!DOCTYPE html><html><body>${html}</body></html>`,
-    null,
-    { title: filename, fontSize: 24, lang: "zh-CN" }
-  );
-  const url = URL.createObjectURL(blob as Blob);
+  const content = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>${filename}</title></head>
+<body>${html}</body>
+</html>`;
+  const blob = new Blob([content], { type: "application/msword" });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${filename}.docx`;
+  a.download = `${filename}.doc`;
   a.click();
   URL.revokeObjectURL(url);
 }

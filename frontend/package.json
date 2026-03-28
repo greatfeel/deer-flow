@@ -67,7 +67,6 @@
     "embla-carousel-react": "^8.6.0",
     "gsap": "^3.13.0",
     "hast": "^1.0.0",
-    "html-to-docx": "^1.8.0",
     "katex": "^0.16.28",
     "lucide-react": "^0.562.0",
     "mammoth": "^1.12.0",
