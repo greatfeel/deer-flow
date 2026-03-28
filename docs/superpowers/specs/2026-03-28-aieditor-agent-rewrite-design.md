@@ -77,14 +77,69 @@ Leverage AiEditor's `CustomAiModelConfig` to route AI requests to a Next.js API 
 
 | File | Operation | Description |
 |------|-----------|-------------|
-| `frontend/src/components/editor/ai-editor-wrapper.tsx` | Modify | Add `ai` config (custom model + bubblePanelMenus) |
+| `frontend/src/components/editor/ai-editor-menus.ts` | Create | Menu items + prompts config (single source of truth) |
+| `frontend/src/components/editor/ai-editor-wrapper.tsx` | Modify | Add `ai` config, import menus from config file |
 | `frontend/src/app/api/editor/rewrite/route.ts` | Create | LangGraph protocol translation layer |
+
+## Menu Customization Requirements
+
+1. **Menu items must be customizable** — can add new items or modify existing ones (title, icon)
+2. **Prompts must be editable** — each menu item's prompt can be freely modified, not locked to AiEditor defaults
+
+To achieve this, we extract the menu definitions into a **standalone config file** `frontend/src/components/editor/ai-editor-menus.ts`. This file serves as the single source of truth for all bubble panel menu items and their prompts, making it easy to add, remove, or modify items without touching the editor wiring code.
+
+## File Changes (updated)
+
+| File | Operation | Description |
+|------|-----------|-------------|
+| `frontend/src/components/editor/ai-editor-menus.ts` | Create | Menu items + prompts config (single source of truth) |
+| `frontend/src/components/editor/ai-editor-wrapper.tsx` | Modify | Add `ai` config, import menus from config file |
+| `frontend/src/app/api/editor/rewrite/route.ts` | Create | LangGraph protocol translation layer |
+
+## Frontend: Menu Config (`ai-editor-menus.ts`)
+
+Standalone config file. To add/modify menu items, edit this file only.
+
+```typescript
+// Each item: { prompt, icon, title }
+// title is an AiEditor i18n key (e.g. "improve-writing" → "改进写作")
+// or a plain string for custom items (displayed as-is)
+// Separator: "<hr/>"
+
+export const bubblePanelMenus = [
+  {
+    title: "improve-writing",
+    icon: "<svg>...</svg>",
+    prompt: `<content>{content}</content>
+请帮我优化一下这段内容，并直接返回优化后的结果。
+注意：你应该先判断一下这句话是中文还是英文，如果是中文，请给我返回中文的内容，如果是英文，请给我返回英文内容，只需要返回内容即可，不需要告知我是中文还是英文。`,
+  },
+  {
+    title: "check-spelling-and-grammar",
+    icon: "<svg>...</svg>",
+    prompt: `<content>{content}</content>
+请帮我检查一下这段内容，是否有拼写错误或者语法上的错误。...`,
+  },
+  // ... make-shorter, make-longer, translate, summarize
+  "<hr/>",
+  // Example: custom menu item
+  {
+    title: "改写为正式公文",
+    icon: "<svg>...</svg>",
+    prompt: `<content>{content}</content>
+请将以上内容改写为正式公文风格，保持原意不变，使用规范的公文用语。`,
+  },
+];
+```
 
 ## Frontend: AiEditor Configuration
 
 In `ai-editor-wrapper.tsx`, add `ai` field to `new AiEditor({...})`:
 
 ```typescript
+import { bubblePanelMenus } from "./ai-editor-menus";
+
+// inside new AiEditor({...})
 ai: {
   models: {
     custom: {
@@ -108,11 +163,7 @@ ai: {
   },
   bubblePanelEnable: true,
   bubblePanelModel: "custom",
-  bubblePanelMenus: [
-    // Copied from AiEditor's built-in PL array, customized as needed
-    // Each item: { prompt, icon, title }
-    // Separator: "<hr/>"
-  ],
+  bubblePanelMenus,
 }
 ```
 
