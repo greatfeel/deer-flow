@@ -158,6 +158,8 @@ export const zhCN: Translations = {
     recentChats: "最近的对话",
     demoChats: "演示对话",
     agents: "智能体",
+    editor: "编辑器",
+    chatEditor: "聊天编辑器",
   },
 
   // Agents
