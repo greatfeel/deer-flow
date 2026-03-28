@@ -1,8 +1,7 @@
 import { Client } from "@langchain/langgraph-sdk";
-import type { Message } from "@langchain/langgraph-sdk";
 
 const LANGGRAPH_API_URL =
-  process.env.NEXT_PUBLIC_LANGGRAPH_BASE_URL || "http://localhost:2024";
+  process.env.NEXT_PUBLIC_LANGGRAPH_BASE_URL ?? "http://localhost:2024";
 
 export async function POST(req: Request) {
   let prompt: string;
@@ -38,7 +37,7 @@ export async function POST(req: Request) {
 
         for await (const event of stream) {
           if (event.event === "messages/partial") {
-            const messages = event.data as Message[];
+            const messages = event.data;
             const lastMessage = messages[messages.length - 1];
 
             if (
