@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+import { bubblePanelMenus } from "./ai-editor-menus";
+
 interface AiEditorWrapperProps {
   draftKey: string;
   onChange?: (html: string) => void;
@@ -60,6 +62,34 @@ export function AiEditorWrapper({ draftKey, onChange, onReady }: AiEditorWrapper
             { name: "json", value: "json" },
             { name: "markdown", value: "markdown" },
           ],
+        },
+        ai: {
+          models: {
+            custom: {
+              url: "/api/editor/rewrite",
+              protocol: "sse" as const,
+              method: "POST",
+              headers: () => ({ "Content-Type": "application/json" }),
+              wrapPayload: (prompt: string) => JSON.stringify({ prompt }),
+              parseMessage: (bodyString: string) => {
+                try {
+                  const json = JSON.parse(bodyString) as {
+                    type?: string;
+                    content?: string;
+                  };
+                  if (json.type === "done" || json.type === "error") {
+                    return { role: "assistant", content: json.content ?? "", status: 2 as const };
+                  }
+                  return { role: "assistant", content: json.content ?? "", status: 1 as const };
+                } catch {
+                  return undefined;
+                }
+              },
+            },
+          },
+          bubblePanelEnable: true,
+          bubblePanelModel: "custom",
+          bubblePanelMenus,
         },
         onChange: (aiEditor: { getHtml: () => string }) => {
           onChangeRef.current?.(aiEditor.getHtml());
