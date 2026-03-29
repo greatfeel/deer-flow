@@ -65,7 +65,7 @@ def _create_summarization_middleware() -> SummarizationMiddleware | None:
     else:
         model = create_chat_model(thinking_enabled=False)
 
-    from langchain_core.runnables import RunnableRetry
+    from langchain_core.runnables.retry import RunnableRetry
     if isinstance(model, RunnableRetry) and hasattr(model, "bound"):
         model = model.bound
 
