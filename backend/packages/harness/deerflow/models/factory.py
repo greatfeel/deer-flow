@@ -79,19 +79,9 @@ def create_chat_model(name: str | None = None, thinking_enabled: bool = False, *
 
     model_instance = model_class(**kwargs, **model_settings_from_config)
 
-    # Wrap with retry for transient API errors (e.g. "Backend buffer overflow" during long streaming responses).
-    # OpenAI SDK's built-in retry only covers HTTP-level errors; this catches application-level APIError
-    # that occurs mid-stream.
-    try:
-        from openai import APIError as OpenAIAPIError
-
-        model_instance = model_instance.with_retry(
-            retry_if_exception_type=(OpenAIAPIError,),
-            stop_after_attempt=3,
-            wait_exponential_jitter=True,
-        )
-    except ImportError:
-        pass
+    # NOTE: .with_retry() was previously used here to wrap transient OpenAI APIError,
+    # but RunnableRetry breaks langchain's agent system (missing bind_tools, _llm_type, etc.).
+    # Retry logic should be handled at a higher level if needed.
 
     if is_tracing_enabled():
         try:

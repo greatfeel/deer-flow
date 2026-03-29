@@ -56,18 +56,13 @@ def _create_summarization_middleware() -> SummarizationMiddleware | None:
     # Prepare keep parameter
     keep = config.keep.to_tuple()
 
-    # Prepare model parameter.
-    # create_chat_model() may wrap the model in RunnableRetry, which lacks
-    # _llm_type that SummarizationMiddleware needs for token counting.
-    # Unwrap to get the underlying BaseChatModel.
+    # Prepare model parameter
     if config.model_name:
         model = create_chat_model(name=config.model_name, thinking_enabled=False)
     else:
+        # Use a lightweight model for summarization to save costs
+        # Falls back to default model if not explicitly specified
         model = create_chat_model(thinking_enabled=False)
-
-    from langchain_core.runnables.retry import RunnableRetry
-    if isinstance(model, RunnableRetry) and hasattr(model, "bound"):
-        model = model.bound
 
     # Prepare kwargs
     kwargs = {
