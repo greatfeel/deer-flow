@@ -1,7 +1,7 @@
 import type { Message } from "@langchain/langgraph-sdk";
-import { FileIcon, Loader2Icon } from "lucide-react";
-import { useParams } from "next/navigation";
-import { memo, useMemo, type ImgHTMLAttributes } from "react";
+import { FileIcon, Loader2Icon, PenLineIcon } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { memo, useCallback, useMemo, type ImgHTMLAttributes } from "react";
 import rehypeKatex from "rehype-katex";
 
 import { Loader } from "@/components/ai-elements/loader";
@@ -18,7 +18,9 @@ import {
 } from "@/components/ai-elements/reasoning";
 import { Task, TaskTrigger } from "@/components/ai-elements/task";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { resolveArtifactURL } from "@/core/artifacts/utils";
+import { storeImportContent } from "@/core/editor/import";
 import { useI18n } from "@/core/i18n/hooks";
 import {
   extractContentFromMessage,
@@ -32,6 +34,7 @@ import { humanMessagePlugins } from "@/core/streamdown";
 import { cn } from "@/lib/utils";
 
 import { CopyButton } from "../copy-button";
+import { Tooltip } from "../tooltip";
 
 import { MarkdownContent } from "./markdown-content";
 
@@ -45,6 +48,21 @@ export function MessageListItem({
   isLoading?: boolean;
 }) {
   const isHuman = message.type === "human";
+  const { t } = useI18n();
+  const router = useRouter();
+
+  const handleEditInEditor = useCallback(() => {
+    const content = extractContentFromMessage(message) ?? "";
+    if (!content) return;
+    storeImportContent({ markdown: content });
+    router.push("/workspace/aieditor?import=1");
+  }, [message, router]);
+
+  const contentText =
+    extractContentFromMessage(message) ??
+    extractReasoningContentFromMessage(message) ??
+    "";
+
   return (
     <AIElementMessage
       className={cn("group/conversation-message relative w-full", className)}
@@ -63,13 +81,19 @@ export function MessageListItem({
           )}
         >
           <div className="flex gap-1">
-            <CopyButton
-              clipboardData={
-                extractContentFromMessage(message) ??
-                extractReasoningContentFromMessage(message) ??
-                ""
-              }
-            />
+            <CopyButton clipboardData={contentText} />
+            {!isHuman && contentText && (
+              <Tooltip content={t.common.openInEditor}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  onClick={handleEditInEditor}
+                >
+                  <PenLineIcon className="size-4" />
+                </Button>
+              </Tooltip>
+            )}
           </div>
         </MessageToolbar>
       )}

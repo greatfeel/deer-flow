@@ -57,3 +57,6 @@ config.yaml.bak
 
 # others
 nohup.out
+
+# MCP
+.playwright-mcp/

@@ -1,4 +1,5 @@
-import { DownloadIcon, LoaderIcon, PackageIcon } from "lucide-react";
+import { DownloadIcon, LoaderIcon, PackageIcon, PenLineIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
@@ -11,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { urlOfArtifact } from "@/core/artifacts/utils";
+import { storeImportContent } from "@/core/editor/import";
 import { useI18n } from "@/core/i18n/hooks";
 import { installSkill } from "@/core/skills/api";
 import {
@@ -32,8 +34,10 @@ export function ArtifactFileList({
   threadId: string;
 }) {
   const { t } = useI18n();
+  const router = useRouter();
   const { select: selectArtifact, setOpen } = useArtifacts();
   const [installingFile, setInstallingFile] = useState<string | null>(null);
+  const [openingInEditor, setOpeningInEditor] = useState<string | null>(null);
 
   const handleClick = useCallback(
     (filepath: string) => {
@@ -71,6 +75,35 @@ export function ArtifactFileList({
     [threadId, installingFile],
   );
 
+  const handleOpenInEditor = useCallback(
+    async (e: React.MouseEvent, filepath: string) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      if (openingInEditor) return;
+      setOpeningInEditor(filepath);
+
+      try {
+        const url = urlOfArtifact({ filepath, threadId });
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+        const markdown = await res.text();
+
+        storeImportContent({
+          markdown,
+          title: getFileName(filepath).replace(/\.md$/i, ""),
+        });
+        router.push("/workspace/aieditor?import=1");
+      } catch (error) {
+        console.error("Failed to open in editor:", error);
+        toast.error("Failed to open file in editor");
+      } finally {
+        setOpeningInEditor(null);
+      }
+    },
+    [threadId, openingInEditor, router],
+  );
+
   return (
     <ul className={cn("flex w-full flex-col gap-4", className)}>
       {files.map((file) => (
@@ -90,6 +123,20 @@ export function ArtifactFileList({
               {getFileExtensionDisplayName(file)} file
             </CardDescription>
             <CardAction>
+              {file.endsWith(".md") && (
+                <Button
+                  variant="ghost"
+                  disabled={openingInEditor === file}
+                  onClick={(e) => handleOpenInEditor(e, file)}
+                >
+                  {openingInEditor === file ? (
+                    <LoaderIcon className="size-4 animate-spin" />
+                  ) : (
+                    <PenLineIcon className="size-4" />
+                  )}
+                  {t.common.openInEditor}
+                </Button>
+              )}
               {file.endsWith(".skill") && (
                 <Button
                   variant="ghost"

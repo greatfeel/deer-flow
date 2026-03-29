@@ -36,6 +36,8 @@ export interface Translations {
     exportAsMarkdown: string;
     exportAsJSON: string;
     exportSuccess: string;
+    openInEditor: string;
+    exportToEditor: string;
   };
 
   // Welcome

@@ -47,6 +47,8 @@ export const zhCN: Translations = {
     exportAsMarkdown: "导出为 Markdown",
     exportAsJSON: "导出为 JSON",
     exportSuccess: "对话已导出",
+    openInEditor: "在编辑器中打开",
+    exportToEditor: "导出到编辑器",
   },
 
   // Welcome

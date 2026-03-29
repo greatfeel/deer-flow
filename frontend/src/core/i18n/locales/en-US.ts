@@ -47,6 +47,8 @@ export const enUS: Translations = {
     exportAsMarkdown: "Export as Markdown",
     exportAsJSON: "Export as JSON",
     exportSuccess: "Conversation exported",
+    openInEditor: "Open in Editor",
+    exportToEditor: "Export to Editor",
   },
 
   // Welcome

@@ -4,10 +4,17 @@ import { useEffect, useRef } from "react";
 
 import { bubblePanelMenus } from "./ai-editor-menus";
 
+export interface AiEditorAPI {
+  getHtml: () => string;
+  getMarkdown: () => string;
+  insert: (html: string) => void;
+  setMarkdownContent: (markdown: string) => void;
+}
+
 interface AiEditorWrapperProps {
   draftKey: string;
   onChange?: (html: string) => void;
-  onReady?: (api: { getHtml: () => string; insert: (html: string) => void }) => void;
+  onReady?: (api: AiEditorAPI) => void;
 }
 
 export function AiEditorWrapper({ draftKey, onChange, onReady }: AiEditorWrapperProps) {
@@ -100,7 +107,9 @@ export function AiEditorWrapper({ draftKey, onChange, onReady }: AiEditorWrapper
 
       onReadyRef.current?.({
         getHtml: () => editor!.getHtml(),
+        getMarkdown: () => editor!.getMarkdown(),
         insert: (html: string) => editor!.insert(html),
+        setMarkdownContent: (markdown: string) => editor!.setMarkdownContent(markdown),
       });
     })();
 

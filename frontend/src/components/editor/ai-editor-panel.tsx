@@ -3,7 +3,9 @@
 import { ArrowLeft, Send } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { AiEditorWrapper } from "./ai-editor-wrapper";
+import { consumeImportContent } from "@/core/editor/import";
+
+import { type AiEditorAPI, AiEditorWrapper } from "./ai-editor-wrapper";
 
 const DRAFT_KEY = "aieditor-draft";
 const TITLE_KEY = "aieditor-title";
@@ -24,9 +26,10 @@ export function AiEditorPanel() {
   const [wordCount, setWordCount] = useState(0);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const editorRef = useRef<{ getHtml: () => string; insert: (html: string) => void } | null>(null);
+  const editorRef = useRef<AiEditorAPI | null>(null);
+  const importHandled = useRef(false);
 
-  // Restore title on mount
+  // Restore title on mount; check for import payload
   useEffect(() => {
     const savedTitle = localStorage.getItem(TITLE_KEY);
     if (savedTitle) setTitle(savedTitle);
@@ -55,8 +58,24 @@ export function AiEditorPanel() {
     setWordCount(text.length);
   }, []);
 
-  const handleEditorReady = useCallback((api: { getHtml: () => string; insert: (html: string) => void }) => {
+  const handleEditorReady = useCallback((api: AiEditorAPI) => {
     editorRef.current = api;
+
+    // If navigated here with ?import=1, load the stored markdown
+    if (!importHandled.current) {
+      importHandled.current = true;
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("import") === "1") {
+        const payload = consumeImportContent();
+        if (payload) {
+          api.setMarkdownContent(payload.markdown);
+          if (payload.title) {
+            setTitle(payload.title);
+            localStorage.setItem(TITLE_KEY, payload.title);
+          }
+        }
+      }
+    }
   }, []);
 
   async function sendMessage() {
