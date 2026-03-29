@@ -57,6 +57,11 @@ config.yaml.bak
 
 # others
 nohup.out
+eventbot.db
 
 # MCP
 .playwright-mcp/
+
+# superpowers
+.superpowers/
+
