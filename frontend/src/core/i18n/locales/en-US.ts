@@ -55,7 +55,7 @@ export const enUS: Translations = {
   welcome: {
     greeting: "Hello, again!",
     description:
-      "Welcome to 🦌 Protocol Agent, an open source super agent. With built-in and custom skills, Protocol Agent helps you search on the web, analyze data, and generate artifacts like slides, web pages and do almost anything.",
+      "Welcome to 🦌 Protocol Agent, an super agent good at writing study protocol. With built-in and custom skills, Protocol Agent helps you search on the web, analyze data, and generate artifacts like slides, web pages and do almost anything.",
 
     createYourOwnSkill: "Create Your Own Skill",
     createYourOwnSkillDescription:
