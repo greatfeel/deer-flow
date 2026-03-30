@@ -28,9 +28,9 @@ export function WorkspaceHeader({ className }: { className?: string }) {
         )}
       >
         {state === "collapsed" ? (
-          <div className="group-has-data-[collapsible=icon]/sidebar-wrapper:-translate-y flex w-full cursor-pointer items-center justify-center">
-            <div className="text-primary block pt-1 font-serif group-hover/workspace-header:hidden">
-              DF
+          <div className="group-has-data-[collapsible=icon]/sidebar-wrapper:-translate-y flex w-full min-w-0 cursor-pointer items-center justify-center px-1">
+            <div className="text-primary block min-w-[2.5rem] pt-1 text-center font-serif group-hover/workspace-header:hidden">
+              方案
             </div>
             <SidebarTrigger className="hidden pl-2 group-hover/workspace-header:block" />
           </div>
