@@ -112,6 +112,7 @@ export interface Translations {
     demoChats: string;
     agents: string;
     aiEditor: string;
+    writingWizard: string;
   };
 
   // Agents

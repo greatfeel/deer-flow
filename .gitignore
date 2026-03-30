@@ -70,3 +70,5 @@ nct.json
 NCT04911959_researcher.json
 NCT04911959.json
 scripts/scrape_ct_researcher.py
+docs/plans/Chictr20260330220506.xml
+docs/plans/ctg-oas-v2.yaml

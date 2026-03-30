@@ -167,6 +167,7 @@ export const enUS: Translations = {
     demoChats: "Demo chats",
     agents: "Agents",
     aiEditor: "AI Editor",
+    writingWizard: "Writing Wizard",
   },
 
   // Agents
