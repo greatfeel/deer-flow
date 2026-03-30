@@ -27,7 +27,7 @@ function LoginForm() {
   return (
     <div className="w-full max-w-sm space-y-6 rounded-lg border border-border bg-card p-8 shadow-lg">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-foreground">DeerFlow</h1>
+        <h1 className="text-2xl font-bold text-foreground">方案Agent</h1>
         <p className="mt-2 text-sm text-muted-foreground">Sign in to continue</p>
       </div>
 

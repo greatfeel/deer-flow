@@ -1,3 +1,40 @@
+# TODO
+在浏览器访问http://ido.modelturbo.com:2026/workspace/agents/new， console 看到如下错误：
+（1）
+http://ido.modelturbo.com:2026/api/langgraph/threads/d5f5c0ba-872d-41ad-99ec-b83c68101816/runs/019d347e-abd1-7543-a431-4dd2041e80aa/cancel?wait=0&action=interrupt:2026/api/langgraph/threads/d5f5c0ba-872d-41ad-99ec-b83c68101816/runs/019d347e-abd1-7543-a431-4dd2041e80aa/cancel?wait=0&action=interrupt:1  Failed to load resource: the server responded with a status of 404 (Not Found)
+
+（2）
+de24e97010c3496b.js:1 Uncaught (in promise) e: HTTP 404: {"detail":"No matching runs to cancel. Please verify the thread ID and run IDs are correct, and the runs haven't been deleted or completed."}
+    at e.fromResponse (de24e97010c3496b.js:1:14299)
+    at async de24e97010c3496b.js:1:15007
+    at async u (de24e97010c3496b.js:1:6268)
+    at async de24e97010c3496b.js:1:12197
+
+# 2026-03-30-03
+## 页面跳转
+访问网站根目录时，直接跳转到/workspace 页面
+
+# 2026-03-30-02
+## 界面细节继续修改
+（1）下面的 “DF“ 改成“方案“，但是，要注意宽度保证足够显示
+          <div className="group-has-data-[collapsible=icon]/sidebar-wrapper:-translate-y flex w-full cursor-pointer items-center justify-center">
+            <div className="text-primary block pt-1 font-serif group-hover/workspace-header:hidden">
+              DF
+            </div>
+            <SidebarTrigger className="hidden pl-2 group-hover/workspace-header:block" />
+          </div>
+（2）把 GitHub 的相关文字信息全部去掉
+（3）About页面内容去掉
+
+# 2026-03-30-01
+## 修改界面显示，去除 DeerFlow 的标识
+（1）在页面的 title，菜单项，显示标志中有DeerFlow的都改为“方案Agent“
+（2）logo 图标（svg 和 ico）改成一个统一的文档机器人的图标
+
+# 2026-03-29-01
+Study on the Safety and Effectiveness of Transcatheter Arterial Chemoembolization (TACE) Combined With Lenvatinib to Prevent Postoperative Recurrence in Patients With Microvascular Invasion (MVI) Positive Hepatocellular Carcinoma (HCC)
+Study of TACE Combined With Lenvatinib to Prevent Postoperative Recurrence in Patients With MVI Positive HCC
+
 # 2026-03-27-01
 ## 修复404 问题，下面的链接访问报 404
 curl 'http://localhost:3000/api/models' \
@@ -411,19 +448,4 @@ run_started_at=2026-03-28T12:50:10.706765+00:00 run_wait_time_ms=705 thread_id=d
 
 # 2026-03-28-09
 解决有序/无序列表功能无法使用的问题
-
-
-# TODO
-最终可导出Word/PDF
-
-在浏览器访问http://ido.modelturbo.com:2026/workspace/agents/new， console 看到如下错误：
-（1）
-http://ido.modelturbo.com:2026/api/langgraph/threads/d5f5c0ba-872d-41ad-99ec-b83c68101816/runs/019d347e-abd1-7543-a431-4dd2041e80aa/cancel?wait=0&action=interrupt:2026/api/langgraph/threads/d5f5c0ba-872d-41ad-99ec-b83c68101816/runs/019d347e-abd1-7543-a431-4dd2041e80aa/cancel?wait=0&action=interrupt:1  Failed to load resource: the server responded with a status of 404 (Not Found)
-
-（2）
-de24e97010c3496b.js:1 Uncaught (in promise) e: HTTP 404: {"detail":"No matching runs to cancel. Please verify the thread ID and run IDs are correct, and the runs haven't been deleted or completed."}
-    at e.fromResponse (de24e97010c3496b.js:1:14299)
-    at async de24e97010c3496b.js:1:15007
-    at async u (de24e97010c3496b.js:1:6268)
-    at async de24e97010c3496b.js:1:12197
 

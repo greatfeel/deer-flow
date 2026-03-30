@@ -65,3 +65,8 @@ eventbot.db
 # superpowers
 .superpowers/
 
+.gstack/
+nct.json
+NCT04911959_researcher.json
+NCT04911959.json
+scripts/scrape_ct_researcher.py
