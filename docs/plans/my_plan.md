@@ -10,6 +10,10 @@ de24e97010c3496b.js:1 Uncaught (in promise) e: HTTP 404: {"detail":"No matching 
     at async u (de24e97010c3496b.js:1:6268)
     at async de24e97010c3496b.js:1:12197
 
+# 2026-03-30-04
+## 页面主色调
+换成符合生物科技公司的颜色
+
 # 2026-03-30-03
 ## 页面跳转
 访问网站根目录时，直接跳转到/workspace 页面
