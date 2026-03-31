@@ -64,6 +64,51 @@
 1）在  https://clinicaltrials.gov 中利用 /docs/plans/ctg-oas-v2.yaml 中的说明，判断上面输入的关键词所属的类别（可以大模型的 API，不要用 Agent），调用clinicaltrials的 API 获得查询结果，得到查询结果第一条的nct_id
 2）如nct_id为NCT04678856，则访问 https://clinicaltrials.gov/api/v2/studies/NCT04678856，得到 json，提取其中的 armsInterventionsModule 部分，填入方案内容输入框
 3）nct_id 和 访问得到的 json 留在本次会话的数据里面，以供后面使用
+4）范例1
+        "armsInterventionsModule": {
+            "armGroups": [
+                {
+                    "label": "control group",
+                    "type": "ACTIVE_COMPARATOR",
+                    "description": "patients receive transcatheter arterial chemoembolization (TACE) only.",
+                    "interventionNames": [
+                        "Procedure: TACE"
+                    ]
+                },
+                {
+                    "label": "Intervention group",
+                    "type": "EXPERIMENTAL",
+                    "description": "patients receive transcatheter arterial chemoembolization (TACE) and lenvatinib 8mg per day.",
+                    "interventionNames": [
+                        "Drug: Lenvatinib",
+                        "Procedure: TACE"
+                    ]
+                }
+            ],
+            "interventions": [
+                {
+                    "type": "DRUG",
+                    "name": "Lenvatinib",
+                    "description": "Lenvatinib is taken orally.",
+                    "armGroupLabels": [
+                        "Intervention group"
+                    ]
+                },
+                {
+                    "type": "PROCEDURE",
+                    "name": "TACE",
+                    "description": "TACE treatment once.",
+                    "armGroupLabels": [
+                        "Intervention group",
+                        "control group"
+                    ],
+                    "otherNames": [
+                        "Transcatheter Arterial Chemoembolization"
+                    ]
+                }
+            ]
+        },
+将上面的 json 信息修改为自然语言的表示
 
 （2）如果在 https://clinicaltrials  中没有找到合适的内容，则利用下面的提示词给 Agent 生成治疗方案，填入方案内容输入框
 ---
@@ -82,7 +127,7 @@
   - 美国临床肿瘤学会（ASCO）https://www.asco.org/
   - 欧洲肿瘤内科学会（ESMO）https://www.esmo.org/
 
--- 范例
+- 范例2
 • 具体剂量递增方案原则：
 本研究每个剂量组按照“3+3”剂量递增原则，从第1剂量组至第3剂量组依次进行，每个剂量组入组3-6例患者，样本量可根据试验实际情况进行调整，每个受试者只接受一个相应的剂量。具体剂量递增方案见下表：
 
@@ -100,6 +145,7 @@
 4. 如果在同一剂量组2例或以上受试者中出现DLT，则终止爬坡，前一剂量组定为 MTD。
 ---
 （3）自动生成治疗方案的操作为单起的新线程，不影响主线程和其他线程的操作，结束后编辑框为 enable 状态
+（4）文本框中首先显示生成的治疗方案的数据来源，然后再显示生成的内容
 
 11）诊断标准
 多行输入框，填入默认文字：采用标准来源（如：中国 XX 指南 2023 版 / WHO 标准 / ICD-11）

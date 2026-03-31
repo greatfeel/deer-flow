@@ -105,20 +105,84 @@ export function GuideForm({ data, onChange, onComplete }: GuideFormProps) {
     [data, onChange],
   );
 
-  // AI 生成 stub — 后续接入后端
+  // 调用后端生成单个字段，contextOverride 可覆盖 data 中的值（用于级联生成）
+  const generateField = useCallback(
+    async (
+      fieldName: string,
+      contextOverride?: Partial<WritingGuideData>,
+    ): Promise<string | null> => {
+      const ctx = { ...data, ...contextOverride };
+      setGeneratingFields((prev) => ({ ...prev, [fieldName]: true }));
+      try {
+        const res = await fetch("/api/writing-wizard/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            field: fieldName,
+            keywords: ctx.keywords,
+            researchTitle: ctx.researchTitle,
+            studyForm: ctx.studyForm,
+            trialObjective: ctx.trialObjective,
+            drugInfo: ctx.drugInfo,
+            subjects: ctx.subjects,
+            overallDesign: ctx.overallDesign,
+          }),
+        });
+        if (!res.ok) {
+          const err = (await res.json().catch(() => ({}))) as {
+            detail?: string;
+          };
+          throw new Error(err.detail ?? `HTTP ${res.status}`);
+        }
+        const result = (await res.json()) as { content: string };
+        return result.content;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "生成失败";
+        toast.error(`AI 生成「${fieldName}」失败：${message}`);
+        return null;
+      } finally {
+        setGeneratingFields((prev) => ({ ...prev, [fieldName]: false }));
+      }
+    },
+    [data],
+  );
+
   const handleGenerate = useCallback(
-    (fieldName: string) => {
-      if (data.keywords.length === 0 && fieldName !== "treatmentPlan") {
+    async (fieldName: string) => {
+      if (data.keywords.length === 0) {
         toast.error("请先输入研究关键词");
         return;
       }
-      setGeneratingFields((prev) => ({ ...prev, [fieldName]: true }));
-      toast.info("AI 生成功能将在后端逻辑完成后启用");
-      setTimeout(() => {
-        setGeneratingFields((prev) => ({ ...prev, [fieldName]: false }));
-      }, 1500);
+
+      if (fieldName === "researchTitle") {
+        // 生成研究题目，成功后级联生成「试验目的」和「受试者」
+        const title = await generateField("researchTitle");
+        if (!title) return;
+        // 先更新题目
+        const updated = { ...data, researchTitle: title };
+        onChange(updated);
+        toast.success("研究题目生成完成，正在自动生成试验目的和受试者...");
+
+        // 并行生成试验目的 + 受试者
+        const [objective, subjects] = await Promise.all([
+          generateField("trialObjective", { researchTitle: title }),
+          generateField("subjects", { researchTitle: title }),
+        ]);
+        const cascaded = { ...updated };
+        if (objective) cascaded.trialObjective = objective;
+        if (subjects) cascaded.subjects = subjects;
+        onChange(cascaded);
+        toast.success("自动生成完成");
+      } else {
+        // 普通单字段生成
+        const content = await generateField(fieldName);
+        if (content) {
+          onChange({ ...data, [fieldName]: content });
+          toast.success("生成完成");
+        }
+      }
     },
-    [data.keywords],
+    [data, onChange, generateField],
   );
 
   const handleComplete = useCallback(() => {

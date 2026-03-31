@@ -17,6 +17,7 @@ from app.gateway.routers import (
     suggestions,
     threads,
     uploads,
+    writing_wizard,
 )
 from deerflow.config.app_config import get_app_config
 
@@ -191,6 +192,9 @@ This gateway provides custom endpoints for models, MCP configuration, skills, an
 
     # Channels API is mounted at /api/channels
     app.include_router(channels.router)
+
+    # Writing Wizard API is mounted at /api/writing-wizard
+    app.include_router(writing_wizard.router)
 
     @app.get("/health", tags=["health"])
     async def health_check() -> dict:
